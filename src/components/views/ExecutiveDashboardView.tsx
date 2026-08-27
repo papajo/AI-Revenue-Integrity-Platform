@@ -13,16 +13,23 @@ import {
   Sparkles,
   CheckCircle2,
 } from "lucide-react";
-import { FinancialMetrics } from "../../types";
+import { FinancialMetrics, MonthlyPerformanceMetric, TopPayerPerformance } from "../../types";
+import { mockMonthlyPerformance, mockTopPayersPerformance } from "../../data/mockData";
+import { ExecutiveTrendAnalytics } from "./ExecutiveTrendAnalytics";
+import { PayerPerformanceSection } from "./PayerPerformanceSection";
 
 interface ExecutiveDashboardProps {
   metrics: FinancialMetrics;
+  monthlyPerformance?: MonthlyPerformanceMetric[];
+  topPayers?: TopPayerPerformance[];
   onNavigateToQueue: () => void;
   onNavigateToDemo: () => void;
 }
 
 export const ExecutiveDashboardView: React.FC<ExecutiveDashboardProps> = ({
   metrics,
+  monthlyPerformance = mockMonthlyPerformance,
+  topPayers = mockTopPayersPerformance,
   onNavigateToQueue,
   onNavigateToDemo,
 }) => {
@@ -145,7 +152,13 @@ export const ExecutiveDashboardView: React.FC<ExecutiveDashboardProps> = ({
         </div>
       </div>
 
-      {/* Analytics & Charts Row */}
+      {/* 4-Month Revenue Recovery Trend Charts (Recharts) */}
+      <ExecutiveTrendAnalytics monthlyData={monthlyPerformance} />
+
+      {/* Payer Performance Section: Average Turnaround Time vs Recovery Rate (Top 5 Payers) */}
+      <PayerPerformanceSection payersData={topPayers} />
+
+      {/* Analytics & Root Cause Breakdown Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Denial Categories & Prevention Rate */}
         <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
@@ -211,66 +224,34 @@ export const ExecutiveDashboardView: React.FC<ExecutiveDashboardProps> = ({
           </div>
         </div>
 
-        {/* Payer Performance Matrix */}
+        {/* Quick CTA to interactive story demo & Lifecycle */}
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-bold text-slate-900">Payer Adjudication Matrix</h2>
-              <span className="text-[11px] text-slate-500">Live 835 ERA feeds</span>
+              <h2 className="text-base font-bold text-slate-900">Revenue Integrity Assurance</h2>
+              <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">Active AI Defense</span>
             </div>
+            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              Our bidirectional integration engine continuously monitors inpatient admissions, outpatient diagnostic orders, and surgical schedules to scrub claims against 2,400+ payer clinical guidelines before submission.
+            </p>
 
-            <div className="space-y-3 pt-1">
-              {[
-                {
-                  payer: "Medicare Fee-for-Service",
-                  cleanRate: "98.8%",
-                  avgPayDays: "14.2d",
-                  status: "Optimal",
-                  statusColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
-                },
-                {
-                  payer: "Blue Cross Blue Shield",
-                  cleanRate: "94.2%",
-                  avgPayDays: "22.5d",
-                  status: "Auth Sensitive",
-                  statusColor: "text-purple-700 bg-purple-50 border-purple-200",
-                },
-                {
-                  payer: "Aetna Choice POS",
-                  cleanRate: "91.5%",
-                  avgPayDays: "26.1d",
-                  status: "Med-Nec Watch",
-                  statusColor: "text-amber-700 bg-amber-50 border-amber-200",
-                },
-                {
-                  payer: "UnitedHealthcare",
-                  cleanRate: "93.1%",
-                  avgPayDays: "24.8d",
-                  status: "Active Scrubbing",
-                  statusColor: "text-blue-700 bg-blue-50 border-blue-200",
-                },
-              ].map((p) => (
-                <div
-                  key={p.payer}
-                  className="rounded-lg border border-slate-100 bg-slate-50/60 p-2.5 flex items-center justify-between text-xs"
-                >
-                  <div>
-                    <div className="font-semibold text-slate-900">{p.payer}</div>
-                    <div className="text-[11px] text-slate-500">
-                      Clean: <span className="font-medium text-slate-800">{p.cleanRate}</span> • Turnaround:{" "}
-                      <span className="font-medium text-slate-800">{p.avgPayDays}</span>
-                    </div>
-                  </div>
-                  <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold border ${p.statusColor}`}>
-                    {p.status}
-                  </span>
-                </div>
-              ))}
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2 text-xs text-slate-700">
+                <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                <span><strong>278 Electronic Prior Auth:</strong> Real-time EDI validation</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-700">
+                <div className="h-2 w-2 rounded-full bg-blue-500" />
+                <span><strong>837 / 835 ERA Automation:</strong> Sub-second claim adjudication</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-700">
+                <div className="h-2 w-2 rounded-full bg-indigo-500" />
+                <span><strong>FHIR / HL7v2 Clinical Feeds:</strong> Live EHR sync with St. Jude EMR</span>
+              </div>
             </div>
           </div>
 
-          {/* Quick CTA to interactive story demo */}
-          <div className="mt-4 rounded-lg bg-slate-900 p-3.5 text-white">
+          <div className="mt-5 rounded-lg bg-slate-900 p-3.5 text-white">
             <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
               <CheckCircle2 className="h-4 w-4" />
               <span>Full 13-Step Patient Revenue Lifecycle</span>
@@ -315,3 +296,4 @@ export const ExecutiveDashboardView: React.FC<ExecutiveDashboardProps> = ({
     </div>
   );
 };
+

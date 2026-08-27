@@ -284,6 +284,25 @@ export interface AuditLogEntry {
   tamperProofHash: string;
 }
 
+export interface MonthlyPerformanceMetric {
+  monthKey: string; // e.g. "2026-05", "2026-06", "2026-07", "2026-08"
+  monthLabel: string; // e.g. "May 2026", "Jun 2026", "Jul 2026", "Aug 2026 (Current)"
+  shortLabel: string; // "May", "Jun", "Jul", "Aug (Curr)"
+  isCurrentMonth: boolean;
+  grossBilled: number;
+  netCollected: number;
+  preventedDenials: number;
+  recoveredAppeals: number;
+  totalProtectedRevenue: number;
+  cleanClaimRatePercent: number;
+  initialDenialRatePercent: number;
+  daysInAR: number;
+  agedAROver90DaysPercent: number;
+  cdiQueryAgreementRatePercent: number;
+  priorAuthReadinessScore: number;
+  preBillLeakageIntercepted: number;
+}
+
 export interface PayerRulePolicy {
   id: string;
   payerName: string;
@@ -296,3 +315,23 @@ export interface PayerRulePolicy {
   summaryCriteria: string[];
   sourceUrl: string;
 }
+
+export interface TopPayerPerformance {
+  id: string;
+  payerName: string;
+  shortName: string;
+  category: "Government / CMS" | "Commercial" | "Medicare Advantage" | "Managed Medicaid";
+  claimVolume: number;
+  totalBilledAmount: number;
+  totalCollectedAmount: number;
+  avgTurnaroundDays: number; // Average Turnaround Time in days
+  recoveryRatePercent: number; // Recovery rate percentage (e.g. 96.8%)
+  cleanClaimRatePercent: number;
+  initialDenialRatePercent: number;
+  appealsOverturnRatePercent: number;
+  promptPayCompliancePercent: number;
+  status: "Optimal" | "Auth Sensitive" | "Med-Nec Watch" | "Active Scrubbing" | "High Friction";
+  primaryDenialRootCause: string;
+  recommendedAction: string;
+}
+
