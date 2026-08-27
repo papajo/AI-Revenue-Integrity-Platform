@@ -1,0 +1,6 @@
+{
+  "name": "AI Revenue Integrity Platform",
+  "description": "Enterprise AI Revenue Cycle Management and Revenue Integrity Platform for Documentation Integrity, Coding QA, Prior Authorization, Denials & Appeals, and Billing-as-a-Service.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
