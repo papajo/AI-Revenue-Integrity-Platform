@@ -335,3 +335,48 @@ export interface TopPayerPerformance {
   recommendedAction: string;
 }
 
+export interface ProjectedKpiDataPoint {
+  periodKey: string;
+  label: string;
+  shortLabel: string;
+  quarter: string;
+  isActual: boolean;
+  isCurrent: boolean;
+  // Actual metrics (when isActual is true)
+  actualProtectedRevenue?: number;
+  actualCleanClaimRate?: number;
+  actualInitialDenialRate?: number;
+  actualDaysInAR?: number;
+  actualNetCollected?: number;
+  // Continuous projection trend line
+  trendProtectedRevenue: number;
+  trendCleanClaimRate: number;
+  trendInitialDenialRate: number;
+  trendDaysInAR: number;
+  trendNetCollected: number;
+  // Confidence intervals for forecast
+  confidenceLower?: number;
+  confidenceUpper?: number;
+  notes?: string;
+}
+
+export interface NextQuarterProjectionSummary {
+  quarterName: string;
+  timeframe: string;
+  projectedProtectedRevenue: number;
+  projectedQuarterlyNetCollected: number;
+  projectedCleanClaimRate: number;
+  projectedInitialDenialRate: number;
+  projectedDaysInAR: number;
+  estimatedCashFlowLift: number;
+  confidenceScore: number;
+  forecastModel: string;
+  growthVsBaselinePercent: number;
+  keyDrivers: {
+    title: string;
+    impact: string;
+    badge: string;
+    description: string;
+  }[];
+}
+

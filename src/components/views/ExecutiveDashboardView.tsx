@@ -13,15 +13,29 @@ import {
   Sparkles,
   CheckCircle2,
 } from "lucide-react";
-import { FinancialMetrics, MonthlyPerformanceMetric, TopPayerPerformance } from "../../types";
-import { mockMonthlyPerformance, mockTopPayersPerformance } from "../../data/mockData";
+import {
+  FinancialMetrics,
+  MonthlyPerformanceMetric,
+  TopPayerPerformance,
+  ProjectedKpiDataPoint,
+  NextQuarterProjectionSummary,
+} from "../../types";
+import {
+  mockMonthlyPerformance,
+  mockTopPayersPerformance,
+  mockOutlookProjections,
+  mockNextQuarterSummary,
+} from "../../data/mockData";
 import { ExecutiveTrendAnalytics } from "./ExecutiveTrendAnalytics";
 import { PayerPerformanceSection } from "./PayerPerformanceSection";
+import { AIFinancialOutlookSection } from "./AIFinancialOutlookSection";
 
 interface ExecutiveDashboardProps {
   metrics: FinancialMetrics;
   monthlyPerformance?: MonthlyPerformanceMetric[];
   topPayers?: TopPayerPerformance[];
+  outlookProjections?: ProjectedKpiDataPoint[];
+  outlookSummary?: NextQuarterProjectionSummary;
   onNavigateToQueue: () => void;
   onNavigateToDemo: () => void;
 }
@@ -30,6 +44,8 @@ export const ExecutiveDashboardView: React.FC<ExecutiveDashboardProps> = ({
   metrics,
   monthlyPerformance = mockMonthlyPerformance,
   topPayers = mockTopPayersPerformance,
+  outlookProjections = mockOutlookProjections,
+  outlookSummary = mockNextQuarterSummary,
   onNavigateToQueue,
   onNavigateToDemo,
 }) => {
@@ -154,6 +170,13 @@ export const ExecutiveDashboardView: React.FC<ExecutiveDashboardProps> = ({
 
       {/* 4-Month Revenue Recovery Trend Charts (Recharts) */}
       <ExecutiveTrendAnalytics monthlyData={monthlyPerformance} />
+
+      {/* AI Financial Outlook: Next Quarter (Q4 2026) Trend Line Projections */}
+      <AIFinancialOutlookSection
+        projections={outlookProjections}
+        summary={outlookSummary}
+        currentMetrics={metrics}
+      />
 
       {/* Payer Performance Section: Average Turnaround Time vs Recovery Rate (Top 5 Payers) */}
       <PayerPerformanceSection payersData={topPayers} />
