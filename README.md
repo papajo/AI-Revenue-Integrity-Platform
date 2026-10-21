@@ -22,17 +22,17 @@ Hospitals lose revenue quietly. Notes don't support the codes billed, coding edi
 - Supporting views: a 13-step patient-journey walkthrough, an AI governance and audit log, and an integration hub mock-up (FHIR R4 / X12 EDI)
 
 ### Design decisions
-- **Resilient AI calls.** Every endpoint goes through `executeAIWithFallback`. It tries a primary Gemini model, falls back to a second one, and gives each a timeout. If both fail, or no API key is set, it returns deterministic built-in results labelled with their `source`. That keeps the demo usable offline and shows which answers came from the model.
+- **Resilient AI calls.** Every endpoint goes through `executeAIWithFallback`. It tries a primary Gemini model, then a second Gemini model, then **Groq** (`GROQ_API_KEY`), each with a timeout. If all fail, or no key is set, it returns deterministic built-in results. Every response carries a `source` field saying which one answered. That keeps the demo usable offline and shows which answers came from the model.
 - **Structured output only.** Models are asked for JSON (`responseMimeType: application/json`) and the response is parsed before it reaches the UI. Free text is never rendered directly.
 - **Review happens before the claim is sent.** The checks run before submission, where fixing a problem is cheap, rather than after a denial.
 
 ### Tech stack
-TypeScript · React 19 · Vite · Express (`server.ts`) · Tailwind CSS · Recharts · Google Gemini (`@google/genai`)
+TypeScript · React 19 · Vite · Express (`server.ts`) · Tailwind CSS · Recharts · Google Gemini (`@google/genai`) · Groq (fallback)
 
 ### Run it locally
 ```bash
 npm install
-cp .env.example .env    # set GEMINI_API_KEY (optional — without it the deterministic fallback is used)
+cp .env.example .env    # set GEMINI_API_KEY and/or GROQ_API_KEY (both optional — without them the deterministic fallback is used)
 npm run dev             # http://localhost:3000
 ```
 Production build: `npm run build && npm start`.

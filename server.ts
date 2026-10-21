@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
+import { groqChat, groqConfigured, groqTextModel, parseJSONLoose } from "./groqClient.ts";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -31,13 +32,25 @@ function getAI(): GoogleGenAI | null {
  * Resilient AI Executor:
  * 1. Tries primary model 'gemini-3.7-flash' with an 8-second timeout guard
  * 2. If high demand / 503 / 429 / timeout occurs, tries secondary fallback 'gemini-2.5-flash' with a 6-second timeout
- * 3. If upstream is temporarily unavailable, seamlessly serves high-fidelity deterministic clinical rules engine payload
+ * 3. If Gemini is missing or unavailable, tries Groq (GROQ_API_KEY)
+ * 4. If all providers fail, serves the deterministic rules-engine payload
  * This guarantees 100% platform uptime and prevents 503 exceptions from degrading user workflows.
  */
+async function tryGroq<T>(prompt: string): Promise<{ data: T; source: string } | null> {
+  if (!groqConfigured()) return null;
+  try {
+    const text = await groqChat([{ role: "user", content: prompt }], { json: true, timeoutMs: 15000 });
+    return { data: parseJSONLoose<T>(text), source: `groq:${groqTextModel()}` };
+  } catch (err: any) {
+    console.warn(`Groq fallback failed (${err?.message}).`);
+    return null;
+  }
+}
+
 async function executeAIWithFallback<T>(prompt: string, fallbackData: T): Promise<{ data: T; source: string }> {
   const ai = getAI();
   if (!ai) {
-    return { data: fallbackData, source: "deterministic-rules-engine" };
+    return (await tryGroq<T>(prompt)) ?? { data: fallbackData, source: "deterministic-rules-engine" };
   }
 
   const modelConfigs = [
@@ -74,7 +87,10 @@ async function executeAIWithFallback<T>(prompt: string, fallbackData: T): Promis
     }
   }
 
-  console.info("Upstream model at peak demand. Seamlessly activated certified Clinical RCM Rules Engine.");
+  const groq = await tryGroq<T>(prompt);
+  if (groq) return groq;
+
+  console.info("All AI providers unavailable; serving deterministic rules-engine result.");
   return { data: fallbackData, source: "rules-engine-fallback" };
 }
 
@@ -83,6 +99,7 @@ app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
     hasApiKey: !!process.env.GEMINI_API_KEY,
+    hasGroqKey: !!process.env.GROQ_API_KEY,
     timestamp: new Date().toISOString(),
     version: "1.0.0-revenue-integrity",
   });
