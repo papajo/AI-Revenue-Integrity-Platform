@@ -1,31 +1,44 @@
 # AI Revenue Integrity Platform
 
-**An AI-assisted dashboard for spotting revenue leakage and understanding financial outlook.**
+**A prototype for hospitals' billing workflow (the revenue cycle) that uses AI to catch documentation, coding, prior-auth and denial problems *before* a claim goes out.**
 
-Businesses lose money quietly — under-billing, missed charges, inconsistent pricing, and transactions nobody reviews. This platform surfaces those problems in one place and adds an AI-generated financial outlook section so the numbers come with an explanation, not just a chart.
+Hospitals lose revenue quietly. Notes don't support the codes billed, coding edits get missed, prior authorizations lapse, and denials go unappealed. This prototype puts those checks in one workbench. Each module sends the case to Google Gemini for a structured review and shows the findings, along with an executive view of what was prevented and recovered.
 
-[SCREENSHOT: add a screenshot of the dashboard / financial outlook section]
+![Executive dashboard](assets/executive-dashboard.png)
+
+> All organizations, patients and figures in the app are **fictional mock data** (`src/data/mockData.ts`). Nothing connects to a real EHR or payer.
 
 ### What it does
-- Dashboard view of revenue-integrity signals [LIST THE 3–4 SIGNALS YOUR APP ACTUALLY SHOWS]
-- AI financial outlook section: a generated summary of where revenue is heading and why
-- Built as a TypeScript app (Bun + Vite) with a server component, using Google Gemini
+- **Executive ROI hub:** prevented denials, appeals recovered, clean-claim rate and days in A/R, plus month-over-month trends and payer performance
+- **Revenue work queue:** prioritized items across all modules
+- **Six AI review modules**, each backed by its own API endpoint in `server.ts`:
+  1. Documentation integrity: finds gaps where clinical notes don't support the coding, and builds the query to send back to the physician (CDI)
+  2. Coding QA: checks codes against NCCI edits
+  3. Prior authorization evaluation
+  4. Denials and appeals: drafts appeal letters
+  5. Discharge summary review
+  6. Billing-as-a-service view
+- **AI financial outlook:** projected KPIs and a next-quarter summary
+- Supporting views: a 13-step patient-journey walkthrough, an AI governance and audit log, and an integration hub mock-up (FHIR R4 / X12 EDI)
+
+### Design decisions
+- **Resilient AI calls.** Every endpoint goes through `executeAIWithFallback`. It tries a primary Gemini model, falls back to a second one, and gives each a timeout. If both fail, or no API key is set, it returns deterministic built-in results labelled with their `source`. That keeps the demo usable offline and shows which answers came from the model.
+- **Structured output only.** Models are asked for JSON (`responseMimeType: application/json`) and the response is parsed before it reaches the UI. Free text is never rendered directly.
+- **Review happens before the claim is sent.** The checks run before submission, where fixing a problem is cheap, rather than after a denial.
 
 ### Tech stack
-TypeScript · Bun · Vite · Google Gemini
+TypeScript · React 19 · Vite · Express (`server.ts`) · Tailwind CSS · Recharts · Google Gemini (`@google/genai`)
 
 ### Run it locally
 ```bash
-bun install
-# set GEMINI_API_KEY in your environment
-bun run dev
+npm install
+cp .env.example .env    # set GEMINI_API_KEY (optional — without it the deterministic fallback is used)
+npm run dev             # http://localhost:3000
 ```
-[VERIFY: adjust the commands above to match package.json scripts before publishing]
-
-### Why I built this / decisions I made
-[IN YOUR WORDS — 4–6 sentences: what "revenue integrity" problem you wanted to explore, why a dashboard plus a written AI outlook beats a chart alone, and the limits of the prototype (sample data? which data sources would a real client version connect to?).]
+Production build: `npm run build && npm start`.
 
 ### Status
-Working prototype, actively developed. Started from Google AI Studio tooling, then extended with the AI financial outlook dashboard.
+A working prototype on mock data. Started from Google AI Studio tooling, then extended. A real deployment would need EHR/clearinghouse integrations, payer-specific rule sets, PHI handling under a BAA, and validation of the AI reviews by certified coders.
 
----
+### License
+MIT — see [LICENSE](LICENSE).

@@ -40,7 +40,7 @@ import {
 
 export default function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>("CDI Specialist");
-  const [currentOrg, setCurrentOrg] = useState("St. Jude Memorial Health System (Multi-Hospital)");
+  const [currentOrg, setCurrentOrg] = useState("Lakeview Memorial Health System (Multi-Hospital)");
   const [maskPhi, setMaskPhi] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

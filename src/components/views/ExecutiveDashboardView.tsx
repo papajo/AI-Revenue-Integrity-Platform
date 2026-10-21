@@ -269,7 +269,7 @@ export const ExecutiveDashboardView: React.FC<ExecutiveDashboardProps> = ({
               </div>
               <div className="flex items-center gap-2 text-xs text-slate-700">
                 <div className="h-2 w-2 rounded-full bg-indigo-500" />
-                <span><strong>FHIR / HL7v2 Clinical Feeds:</strong> Live EHR sync with St. Jude EMR</span>
+                <span><strong>FHIR / HL7v2 Clinical Feeds:</strong> Live EHR sync with Lakeview EMR</span>
               </div>
             </div>
           </div>

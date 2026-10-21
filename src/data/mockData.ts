@@ -114,7 +114,7 @@ export const mockEncounters: Encounter[] = [
   {
     id: "ENC-847291",
     patientId: "PT-10492",
-    facility: "St. Jude Memorial Hospital - Inpatient Tower",
+    facility: "Lakeview Memorial Hospital - Inpatient Tower",
     admissionDate: "2026-08-24T09:30:00Z",
     encounterType: "Inpatient",
     attendingPhysician: "Dr. Gregory Martinez, MD (Pulmonology / Critical Care)",

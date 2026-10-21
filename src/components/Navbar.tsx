@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const orgOptions = [
-    "St. Jude Memorial Health System (Multi-Hospital)",
+    "Lakeview Memorial Health System (Multi-Hospital)",
     "Tier 1: Physician Practice Group",
     "Tier 2: Regional Acute Hospital",
     "Tier 3: Academic Health System",
